@@ -58,4 +58,6 @@ Docker provides isolation. Codex runs as a regular user and can read and modify 
 
 Run `./code/containers/codex/ci/build-image.sh docker` or `./code/containers/codex/ci/build-image.sh podman` from the repository root. CI runs both checks as independent jobs. Each engine builds the image and runs its entrypoint with `--version` and networking disabled.
 
-The GitLab CI configuration is in `code/containers/codex/ci/gitlab.yml`. The Docker job uses Docker-in-Docker with TLS. For a self-managed Docker executor, enable privileged mode for the Docker-in-Docker service and share `/certs/client` between the service and the job. The Podman job needs a runner that supports nested containers and network namespaces.
+The Docker and Podman airplane-mode jobs warm the build cache, disconnect the builder, rebuild the Codex image, and run `codex --version` offline.
+
+The GitLab CI configuration is in `code/containers/codex/ci/gitlab.yml`. The Docker jobs use Docker-in-Docker with TLS. For a self-managed Docker executor, enable privileged mode for the Docker-in-Docker service and share `/certs/client` between the service and the job. The Podman jobs need a runner that supports nested containers and network namespaces.
