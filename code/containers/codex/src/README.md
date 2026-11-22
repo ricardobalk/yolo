@@ -58,6 +58,6 @@ Docker provides isolation. Codex runs as a regular user and can read and modify 
 
 Run `./code/containers/codex/ci/build-image.sh docker` or `./code/containers/codex/ci/build-image.sh podman` from the repository root. CI runs both checks as independent jobs. Each engine builds the image and runs its entrypoint with `--version` and networking disabled.
 
-GitHub, Forgejo and Gitea use the workflow in `.github/workflows/`. On Forgejo and Gitea, enable Actions and provide runners labelled `ubuntu-24.04` with Node.js for checkout, Docker with access to its daemon, and a working Podman installation. Two free runner slots allow both jobs to run at once. If your instance uses an action mirror, make sure its copy of `actions/checkout` contains the pinned upstream commit.
+The Docker and Podman airplane-mode jobs warm the build cache, disconnect the builder, rebuild the Codex image, and run `codex --version` offline.
 
-Both GitLab jobs use the build stage. The Docker job uses Docker-in-Docker with TLS. For a self-managed Docker executor, enable privileged mode for the Docker-in-Docker service and share `/certs/client` between the service and the job. The Podman job uses its own pinned image and needs a runner that supports building and running containers inside the job.
+The GitLab CI configuration is in `code/containers/codex/ci/gitlab.yml`. The Docker jobs use Docker-in-Docker with TLS. For a self-managed Docker executor, enable privileged mode for the Docker-in-Docker service and share `/certs/client` between the service and the job. The Podman jobs need a runner that supports nested containers and network namespaces.

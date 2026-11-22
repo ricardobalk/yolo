@@ -17,3 +17,15 @@ build-image-podman:
   image: quay.io/podman/stable:v6.2.0@sha256:699988997a6bec77661e2f0f489d96df8dd3fff47996e306acc41e268254fad3
   script:
     - ./code/containers/codex/ci/build-image.sh podman
+
+check-airplane-mode:
+  extends: build-image
+  stage: test
+  script:
+    - ./code/containers/codex/ci/check-airplane-mode.sh docker
+
+check-airplane-mode-podman:
+  extends: build-image-podman
+  stage: test
+  script:
+    - ./code/containers/codex/ci/check-airplane-mode.sh podman
