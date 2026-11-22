@@ -1,0 +1,50 @@
+# Getting started
+
+The files in this `src/` directory are all you need to run Codex CLI with Docker Compose.
+
+Place your project files in `project/` and run the following commands from this directory.
+
+```bash
+docker compose build
+docker compose run --rm codex login --device-auth
+docker compose run --rm codex
+```
+
+Before you log in for the first time, enable device code authentication in your ChatGPT settings or workspace policy. [Codex authentication](https://learn.chatgpt.com/docs/auth#login-on-headless-devices)
+
+If your repository is elsewhere, specify its parent directory and the name of the repository directory.
+
+```bash
+CODEX_PROJECTS_DIR="$HOME/dev" CODEX_PROJECT_NAME=my-repo docker compose run --rm codex
+```
+
+## Install dependencies with pnpm
+
+```bash
+docker compose run --rm --entrypoint pnpm codex install --frozen-lockfile
+```
+
+## Running Docker directly
+
+After running `docker compose build`, you can use the same image and volume.
+
+```bash
+docker run --rm -it --init --cap-drop=ALL --security-opt=no-new-privileges \
+  -v "$PWD/project:/home/workspace/project" \
+  -v codex_data:/home/workspace/.codex \
+  -w /home/workspace/project \
+  codex-local
+```
+
+## Files and permissions
+
+With a standard Docker installation on Linux, if your host user’s UID and GID differ from `1000:1000`, you can set them before the first build.
+
+```bash
+export CODEX_UID="$(id -u)" CODEX_GID="$(id -g)"
+docker compose build
+```
+
+Rootless Docker uses a different [UID/GID mapping](https://docs.docker.com/engine/security/rootless/uid-gid-mapping).
+
+Docker provides isolation. Codex runs as a regular user and can read and modify both the mounted repository and the contents of `codex_data`. When the container exits, `run --rm` removes it and keeps the volume. **Running `docker compose down -v` also deletes `codex_data`.**
