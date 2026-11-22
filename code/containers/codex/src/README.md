@@ -24,14 +24,19 @@ CODEX_PROJECTS_DIR="$HOME/dev" CODEX_PROJECT_NAME=my-repo docker compose run --r
 docker compose run --rm --entrypoint pnpm codex install --frozen-lockfile
 ```
 
+### Considerations
+
+We pin tool versions so rebuilds use the same toolchain and keep packages fetched with `pnpm fetch` in `codex_pnpm_store` for offline installs with `pnpm install --offline --frozen-lockfile`.
+
 ## Running Docker directly
 
-After running `docker compose build`, you can use the same image and volume.
+After running `docker compose build`, you can use the same image and volumes.
 
 ```bash
 docker run --rm -it --init --cap-drop=ALL --security-opt=no-new-privileges \
   -v "$PWD/project:/home/workspace/project" \
   -v codex_data:/home/workspace/.codex \
+  -v codex_pnpm_store:/home/workspace/.local/share/pnpm/store \
   -w /home/workspace/project \
   codex-local
 ```
@@ -47,4 +52,4 @@ docker compose build
 
 Rootless Docker uses a different [UID/GID mapping](https://docs.docker.com/engine/security/rootless/uid-gid-mapping).
 
-Docker provides isolation. Codex runs as a regular user and can read and modify both the mounted repository and the contents of `codex_data`. When the container exits, `run --rm` removes it and keeps the volume. **Running `docker compose down -v` also deletes `codex_data`.**
+Docker provides isolation. Codex runs as a regular user and can read and modify the mounted repository and volumes. When the container exits, `run --rm` removes it and keeps the volumes. **Running `docker compose down -v` also deletes `codex_data` and `codex_pnpm_store`.**

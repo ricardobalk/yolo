@@ -27,7 +27,10 @@ services:
         bind:
           create_host_path: false
       - codex_data:/home/workspace/.codex
+      - codex_pnpm_store:/home/workspace/.local/share/pnpm/store
 
 volumes:
   codex_data:
     name: codex_data
+  codex_pnpm_store:
+    name: codex_pnpm_store
