@@ -1,0 +1,25 @@
+services:
+  codex:
+    image: codex-local
+    build:
+      context: .
+      args:
+        CODEX_UID: "${CODEX_UID:-1000}"
+        CODEX_GID: "${CODEX_GID:-1000}"
+    init: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    working_dir: "/home/workspace/${CODEX_PROJECT_NAME:-project}"
+    volumes:
+      - type: bind
+        source: "${CODEX_PROJECTS_DIR:-.}/${CODEX_PROJECT_NAME:-project}"
+        target: "/home/workspace/${CODEX_PROJECT_NAME:-project}"
+        bind:
+          create_host_path: false
+      - codex_data:/home/workspace/.codex
+
+volumes:
+  codex_data:
+    name: codex_data
