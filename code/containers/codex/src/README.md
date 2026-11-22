@@ -18,19 +18,15 @@ If your repository is elsewhere, specify its parent directory and the name of th
 CODEX_PROJECTS_DIR="$HOME/dev" CODEX_PROJECT_NAME=my-repo docker compose run --rm codex
 ```
 
-## pnpm and version pinning
-
-Corepack uses the version specified in your project’s `packageManager` field if it is set. The image defaults to pnpm `10.34.9`. To install dependencies for a repository with a `pnpm-lock.yaml` file, run the following command.
+## Install dependencies with pnpm
 
 ```bash
 docker compose run --rm --entrypoint pnpm codex install --frozen-lockfile
 ```
 
-The Dockerfile pins the `node:26.13-alpine3.24` base image by digest. It also pins Corepack to `0.36.0`, pnpm to `10.34.9` and Codex CLI to `0.171.0`. To update a component, change its version in the Dockerfile and rerun `docker compose build`. If you update the base image, update its digest too.
-
 ### Considerations
 
-Run `pnpm fetch` in the container while online to populate `codex_pnpm_store`, then use `pnpm install --offline --frozen-lockfile` in a fresh container with the same lockfile.
+We pin tool versions so rebuilds use the same toolchain and keep packages fetched with `pnpm fetch` in `codex_pnpm_store` for offline installs with `pnpm install --offline --frozen-lockfile`.
 
 ## Running Docker directly
 

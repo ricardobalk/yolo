@@ -8,7 +8,7 @@ Agentic AI workflows often involve running shell commands, installing dependenci
 
 ## Getting started
 
-Follow the [setup guide](src/README.md) to build the image, sign in and start Codex in your repository. It also covers pnpm, version updates, running Docker directly and Linux file permissions.
+Follow the [setup guide](src/README.md) to build the image, sign in and start Codex in your repository. It also covers pnpm, running Docker directly and Linux file permissions.
 
 # License
 
