@@ -1,0 +1,31 @@
+name: Build container image
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: code/containers/codex / ${{ matrix.check.name }} (${{ matrix.engine }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [docker, podman]
+        check:
+          - name: Build and run
+            script: build-image.sh
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - if: matrix.engine == 'docker'
+        run: ./code/containers/codex/ci/${{ matrix.check.script }} docker
+      - if: matrix.engine == 'podman'
+        env:
+          PODMAN_IMAGE: quay.io/podman/stable:v6.2.0@sha256:699988997a6bec77661e2f0f489d96df8dd3fff47996e306acc41e268254fad3
+        run: |
+          docker run --rm --privileged \
+            --volume "$GITHUB_WORKSPACE:/workspace:ro" --workdir /workspace \
+            --entrypoint sh "$PODMAN_IMAGE" -ec 'podman --version && exec "$@"' \
+            sh ./code/containers/codex/ci/${{ matrix.check.script }} podman

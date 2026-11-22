@@ -53,3 +53,9 @@ docker compose build
 Rootless Docker uses a different [UID/GID mapping](https://docs.docker.com/engine/security/rootless/uid-gid-mapping).
 
 Docker provides isolation. Codex runs as a regular user and can read and modify the mounted repository and volumes. When the container exits, `run --rm` removes it and keeps the volumes. **Running `docker compose down -v` also deletes `codex_data` and `codex_pnpm_store`.**
+
+## Checking the image build
+
+Run `./code/containers/codex/ci/build-image.sh docker` or `./code/containers/codex/ci/build-image.sh podman` from the repository root. CI runs both checks as independent jobs. Each engine builds the image and runs its entrypoint with `--version` and networking disabled.
+
+The GitLab CI configuration is in `code/containers/codex/ci/gitlab.yml`. The Docker job uses Docker-in-Docker with TLS. For a self-managed Docker executor, enable privileged mode for the Docker-in-Docker service and share `/certs/client` between the service and the job. The Podman job needs a runner that supports nested containers and network namespaces.

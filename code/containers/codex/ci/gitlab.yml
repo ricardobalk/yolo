@@ -1,0 +1,19 @@
+code/containers/codex / Build and run (docker):
+  stage: build
+  image: docker:28.5.1-cli@sha256:9190b0613792e658a7783cf14b2d5ace5941bb68ede7276922ea36ee457d76ad
+  services:
+    - name: docker:28.5.1-dind@sha256:ea9d20492ca1caaaba78e68453433895d256173c79281756e88b745647fcbcfd
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: /certs
+    DOCKER_CERT_PATH: /certs/client
+    DOCKER_TLS_VERIFY: "1"
+  script:
+    - ./code/containers/codex/ci/build-image.sh docker
+
+code/containers/codex / Build and run (podman):
+  stage: build
+  image: quay.io/podman/stable:v6.2.0@sha256:699988997a6bec77661e2f0f489d96df8dd3fff47996e306acc41e268254fad3
+  script:
+    - ./code/containers/codex/ci/build-image.sh podman
