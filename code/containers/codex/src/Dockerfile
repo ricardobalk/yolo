@@ -6,6 +6,15 @@ ARG CODEX_CLI_VERSION=0.171.0
 ARG CODEX_UID=1000
 ARG CODEX_GID=1000
 
+ARG HTTP_PROXY
+ARG http_proxy
+ARG HTTPS_PROXY
+ARG https_proxy
+ARG NO_PROXY
+ARG no_proxy
+ARG ALL_PROXY
+ARG all_proxy
+
 RUN apk add --no-cache bash ca-certificates git ripgrep shadow
 
 RUN npm install --global "corepack@$COREPACK_VERSION" \
@@ -16,6 +25,7 @@ ENV HOME=/home/workspace
 ENV CODEX_HOME=/home/workspace/.codex
 ENV PNPM_HOME=/home/workspace/.local/share/pnpm
 ENV COREPACK_DEFAULT_TO_LATEST=0
+ENV NODE_USE_ENV_PROXY=1
 ENV PATH="${PNPM_HOME}:${PATH}"
 
 RUN test "$CODEX_UID" -gt 0 \
