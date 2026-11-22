@@ -28,14 +28,19 @@ docker compose run --rm --entrypoint pnpm codex install --frozen-lockfile
 
 The Dockerfile pins the `node:26.13-alpine3.24` base image by digest. It also pins Corepack to `0.36.0`, pnpm to `10.34.9` and Codex CLI to `0.171.0`. To update a component, change its version in the Dockerfile and rerun `docker compose build`. If you update the base image, update its digest too.
 
+### Considerations
+
+Run `pnpm fetch` in the container while online to populate `codex_pnpm_store`, then use `pnpm install --offline --frozen-lockfile` in a fresh container with the same lockfile.
+
 ## Running Docker directly
 
-After running `docker compose build`, you can use the same image and volume.
+After running `docker compose build`, you can use the same image and volumes.
 
 ```bash
 docker run --rm -it --init --cap-drop=ALL --security-opt=no-new-privileges \
   -v "$PWD/project:/home/workspace/project" \
   -v codex_data:/home/workspace/.codex \
+  -v codex_pnpm_store:/home/workspace/.local/share/pnpm/store \
   -w /home/workspace/project \
   codex-local
 ```
@@ -51,7 +56,7 @@ docker compose build
 
 Rootless Docker uses a different [UID/GID mapping](https://docs.docker.com/engine/security/rootless/uid-gid-mapping).
 
-Docker provides isolation. Codex runs as a regular user and can read and modify both the mounted repository and the contents of `codex_data`. When the container exits, `run --rm` removes it and keeps the volume. **Running `docker compose down -v` also deletes `codex_data`.**
+Docker provides isolation. Codex runs as a regular user and can read and modify the mounted repository and volumes. When the container exits, `run --rm` removes it and keeps the volumes. **Running `docker compose down -v` also deletes `codex_data` and `codex_pnpm_store`.**
 
 ## Checking the image build
 
